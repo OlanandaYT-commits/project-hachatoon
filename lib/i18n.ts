@@ -47,6 +47,7 @@ type Dict = {
   pointsSaved: string;
   pointsSaveFailed: string;
   pointsSaving: string;
+  centerOnMe: string;
   cadence: Record<"daily" | "weekly" | "monthly", string>;
   difficulty: Record<"easy" | "medium" | "hard", string>;
 };
@@ -94,6 +95,7 @@ export const T: Record<Lang, Dict> = {
     pointsSaved: "Points saved",
     pointsSaveFailed: "Could not save points",
     pointsSaving: "Saving points...",
+    centerOnMe: "Center on me",
     cadence: { daily: "Daily", weekly: "Weekly", monthly: "Monthly" },
     difficulty: { easy: "easy", medium: "medium", hard: "hard" },
   },
@@ -139,6 +141,7 @@ export const T: Record<Lang, Dict> = {
     pointsSaved: "Точки сохранены",
     pointsSaveFailed: "Не удалось сохранить точки",
     pointsSaving: "Сохраняем точки...",
+    centerOnMe: "Ко мне",
     cadence: { daily: "Каждый день", weekly: "Каждую неделю", monthly: "Раз в месяц" },
     difficulty: { easy: "легко", medium: "средне", hard: "сложно" },
   },

@@ -29,6 +29,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const quest = await setQuestPins(id, pins);
   if (!quest) return NextResponse.json({ error: "save failed" }, { status: 500 });
 
-  const active = await getActiveQuestSet(sessionId);
+  const active = sessionId ? await getActiveQuestSet(sessionId) : null;
   return NextResponse.json({ active });
 }
