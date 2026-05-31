@@ -45,8 +45,12 @@ export default function QuestMapInner({
           <CircleMarker
             key={pin.id}
             center={[pin.lat, pin.lng]}
-            radius={7}
-            pathOptions={{ color: "#ff5e62", fillColor: "#ff3cac", fillOpacity: 0.9, weight: 2 }}
+            radius={pin.label ? 9 : 7}
+            pathOptions={
+              pin.label
+                ? { color: "#fbbf24", fillColor: "#f59e0b", fillOpacity: 0.95, weight: 2 }
+                : { color: "#ff5e62", fillColor: "#ff3cac", fillOpacity: 0.9, weight: 2 }
+            }
           />
         ))}
       </MapContainer>

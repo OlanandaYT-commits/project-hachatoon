@@ -41,7 +41,11 @@ type Dict = {
   verifiedApproved: (points: number) => string;
   verifiedRejected: string;
   verificationFailed: string;
-  mapTitle: string;
+    mapTitle: string;
+    questDestination: string;
+    openGoogleMaps: string;
+    open2Gis: string;
+    removePoint: string;
   useMyLocation: string;
   pointsHint: string;
   pointsSaved: string;
@@ -90,8 +94,12 @@ export const T: Record<Lang, Dict> = {
     verifiedRejected: "Rejected by AI. Try a clearer proof photo.",
     verificationFailed: "Verification failed. Try again.",
     mapTitle: "Quest map points",
+    questDestination: "Quest spot",
+    openGoogleMaps: "Google Maps",
+    open2Gis: "2GIS",
+    removePoint: "Remove",
     useMyLocation: "Add my location",
-    pointsHint: "Tap on map to add multiple nearby points.",
+    pointsHint: "Quest spot is marked in gold. Tap map to add your own points.",
     pointsSaved: "Points saved",
     pointsSaveFailed: "Could not save points",
     pointsSaving: "Saving points...",
@@ -136,8 +144,12 @@ export const T: Record<Lang, Dict> = {
     verifiedRejected: "ИИ отклонил. Попробуй более понятное фото.",
     verificationFailed: "Не удалось проверить. Попробуй ещё раз.",
     mapTitle: "Точки квеста на карте",
+    questDestination: "Место квеста",
+    openGoogleMaps: "Google Карты",
+    open2Gis: "2GIS",
+    removePoint: "Удалить",
     useMyLocation: "Добавить мою геолокацию",
-    pointsHint: "Нажми на карту, чтобы добавить несколько близких точек.",
+    pointsHint: "Место квеста отмечено золотым. Нажми на карту, чтобы добавить свои точки.",
     pointsSaved: "Точки сохранены",
     pointsSaveFailed: "Не удалось сохранить точки",
     pointsSaving: "Сохраняем точки...",

@@ -4,13 +4,15 @@ import { hasDb, supabase } from "./supabase";
 export type Cadence = "daily" | "weekly" | "monthly";
 export type Difficulty = "easy" | "medium" | "hard";
 export type VerificationStatus = "pending" | "approved" | "rejected" | null;
-export type QuestPin = { id: string; lat: number; lng: number };
+export type QuestPin = { id: string; lat: number; lng: number; label?: string };
 
 export type GeneratedQuest = {
   title: string;
   description: string;
   cadence: Cadence;
   difficulty: Difficulty;
+  place_name?: string;
+  map_points?: QuestPin[];
 };
 
 export type Quest = GeneratedQuest & {
@@ -142,7 +144,7 @@ export async function createQuestSetWithQuests(sessionId: string, source: "ai" |
         verification_status: null,
         reward_points: 0,
         verification_note: null,
-        map_points: [],
+        map_points: q.map_points ?? [],
         quest_set_id: setId,
       };
       mem.quests.set(id, row);
@@ -155,13 +157,16 @@ export async function createQuestSetWithQuests(sessionId: string, source: "ai" |
   if (setErr || !setRow) throw new Error("failed to create quest set");
 
   const rows = quests.map((q) => ({
-    ...q,
+    title: q.title,
+    description: q.description,
+    cadence: q.cadence,
+    difficulty: q.difficulty,
     quest_set_id: setRow.id,
     proof_photo_url: null,
     verification_status: null,
     reward_points: 0,
     verification_note: null,
-    map_points: [],
+    map_points: q.map_points ?? [],
   }));
 
   const { data: inserted, error: qErr } = await supabase.from("quests").insert(rows).select(questSelect());
