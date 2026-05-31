@@ -17,6 +17,7 @@ type Dict = {
   saveError: string;
   loading: string;
   progress: (done: number, total: number) => string;
+  rewardPoints: (points: number) => string;
   newQuests: string;
   shareStreak: string;
   fallbackBanner: string;
@@ -33,6 +34,13 @@ type Dict = {
   shareConquered: string;
   shareDownload: string;
   shareRendering: string;
+  choosePhoto: string;
+  photoSelected: string;
+  verifyNow: string;
+  verifyingNow: string;
+  verifiedApproved: (points: number) => string;
+  verifiedRejected: string;
+  verificationFailed: string;
   cadence: Record<"daily" | "weekly" | "monthly", string>;
   difficulty: Record<"easy" | "medium" | "hard", string>;
 };
@@ -50,6 +58,7 @@ export const T: Record<Lang, Dict> = {
     saveError: "Could not save completion.",
     loading: "Loading...",
     progress: (d, t) => `${d}/${t} quests done this summer${d > 0 ? " 🔥" : ""}`,
+    rewardPoints: (p) => `Reward points: ${p}`,
     newQuests: "New quests",
     shareStreak: "Share streak",
     fallbackBanner: "Offline mode — showing built-in quests",
@@ -62,10 +71,17 @@ export const T: Record<Lang, Dict> = {
     mins: "min",
     secs: "sec",
     summerOver: "Summer is over. Start planning the next one.",
-    shareHeading: "My Summer Quest Log",
+    shareHeading: "My Summer NOW Log",
     shareConquered: "quests conquered 🔥",
     shareDownload: "Download share card",
     shareRendering: "Rendering...",
+    choosePhoto: "Choose proof photo",
+    photoSelected: "Photo selected",
+    verifyNow: "Verify quest",
+    verifyingNow: "Verifying...",
+    verifiedApproved: (points) => `Verified • +${points} points`,
+    verifiedRejected: "Rejected by AI. Try a clearer proof photo.",
+    verificationFailed: "Verification failed. Try again.",
     cadence: { daily: "Daily", weekly: "Weekly", monthly: "Monthly" },
     difficulty: { easy: "easy", medium: "medium", hard: "hard" },
   },
@@ -81,6 +97,7 @@ export const T: Record<Lang, Dict> = {
     saveError: "Не удалось сохранить выполнение.",
     loading: "Загрузка...",
     progress: (d, t) => `${d}/${t} квестов выполнено этим летом${d > 0 ? " 🔥" : ""}`,
+    rewardPoints: (p) => `Награда: ${p} баллов`,
     newQuests: "Новые квесты",
     shareStreak: "Поделиться",
     fallbackBanner: "Оффлайн-режим — встроенные квесты",
@@ -93,10 +110,17 @@ export const T: Record<Lang, Dict> = {
     mins: "мин",
     secs: "сек",
     summerOver: "Лето закончилось. Пора планировать следующее.",
-    shareHeading: "Мой летний журнал квестов",
+    shareHeading: "Мой журнал Summer NOW",
     shareConquered: "квестов покорено 🔥",
     shareDownload: "Скачать карточку",
     shareRendering: "Рендер...",
+    choosePhoto: "Выбрать фото-доказательство",
+    photoSelected: "Фото выбрано",
+    verifyNow: "Проверить квест",
+    verifyingNow: "Проверяем...",
+    verifiedApproved: (points) => `Подтверждено • +${points} баллов`,
+    verifiedRejected: "ИИ отклонил. Попробуй более понятное фото.",
+    verificationFailed: "Не удалось проверить. Попробуй ещё раз.",
     cadence: { daily: "Каждый день", weekly: "Каждую неделю", monthly: "Раз в месяц" },
     difficulty: { easy: "легко", medium: "средне", hard: "сложно" },
   },

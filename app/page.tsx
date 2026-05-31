@@ -10,18 +10,18 @@ import ProgressCounter from "@/components/ProgressCounter";
 import ShareCard from "@/components/ShareCard";
 import SummerCountdown from "@/components/SummerCountdown";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ProofUpload from "@/components/ProofUpload";
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("en");
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [error, setError] = useState("");
-
   const [location, setLocation] = useState("");
   const [interests, setInterests] = useState("");
   const [active, setActive] = useState<ActiveQuestSet | null>(null);
-
   const [showForm, setShowForm] = useState(false);
   const [shareQuests, setShareQuests] = useState<Quest[] | null>(null);
 
@@ -91,73 +91,108 @@ export default function Home() {
     setShareQuests(data.completed ?? []);
   }
 
+  async function handleVerify(questId: string, imageDataUrl: string) {
+    setVerifyingId(questId);
+    setError("");
+    try {
+      const res = await fetch(`/api/quests/${questId}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageDataUrl, lang }),
+      });
+      if (!res.ok) throw new Error("verify failed");
+      const data = await res.json();
+      if (data.active) setActive(data.active as ActiveQuestSet);
+      if (data.error) setError(t.verificationFailed);
+    } catch {
+      setError(t.verificationFailed);
+    } finally {
+      setVerifyingId(null);
+    }
+  }
+
   const done = active ? active.quests.filter((q) => q.completed_at).length : 0;
   const total = active ? active.quests.length : 0;
+  const points = active ? active.quests.reduce((sum, q) => sum + (q.reward_points ?? 0), 0) : 0;
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-5 py-8">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-gray-900">Summer Quests ☀️</h1>
-          <p className="mt-0.5 text-sm text-gray-600">{t.tagline}</p>
-        </div>
-        <LanguageSwitcher lang={lang} onChange={changeLang} />
-      </header>
+    <main className="relative min-h-dvh overflow-hidden">
+      <div className="blob blob-a" />
+      <div className="blob blob-b" />
+      <div className="blob blob-c" />
 
-      <SummerCountdown lang={lang} />
+      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 pb-10 pt-7 sm:px-6 md:gap-6 md:px-8 md:pt-9">
+        <header className="glass-card flex items-center justify-between rounded-2xl px-4 py-3 sm:rounded-3xl sm:px-5">
+          <div>
+            <h1 className="text-xl font-black tracking-tight text-white sm:text-2xl">Summer NOW!</h1>
+            <p className="mt-0.5 max-w-[260px] text-xs text-white/65 sm:max-w-full sm:text-sm">{t.tagline}</p>
+          </div>
+          <LanguageSwitcher lang={lang} onChange={changeLang} />
+        </header>
 
-      {loading && <p className="text-center text-gray-500">{t.loading}</p>}
+        <SummerCountdown lang={lang} />
 
-      {!loading && (showForm || !active) && (
-        <section className="rounded-3xl bg-white/40 p-5 backdrop-blur">
-          <QuestForm
-            lang={lang}
-            initialLocation={location}
-            initialInterests={interests}
-            loading={generating}
-            onSubmit={handleGenerate}
-          />
-          {error && <p className="mt-3 text-center text-sm text-rose-600">{error}</p>}
-        </section>
-      )}
+        {loading && <p className="text-center text-sm font-semibold text-white/70">{t.loading}</p>}
 
-      {!loading && active && !showForm && (
-        <section className="space-y-4">
-          {active.source === "fallback" && (
-            <div className="rounded-xl bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-800">
-              {t.fallbackBanner}
+        {!loading && (showForm || !active) && (
+          <section className="glass-card rounded-2xl p-4 sm:rounded-3xl sm:p-5">
+            <QuestForm
+              lang={lang}
+              initialLocation={location}
+              initialInterests={interests}
+              loading={generating}
+              onSubmit={handleGenerate}
+            />
+            {error && <p className="mt-3 text-center text-sm text-rose-300">{error}</p>}
+          </section>
+        )}
+
+        {!loading && active && !showForm && (
+          <section className="space-y-4 sm:space-y-5">
+            {active.source === "fallback" && (
+              <div className="rounded-xl border border-amber-300/40 bg-amber-400/15 px-4 py-2 text-center text-xs font-bold text-amber-200">
+                {t.fallbackBanner}
+              </div>
+            )}
+
+            <ProgressCounter lang={lang} done={done} total={total} points={points} />
+
+            <div className="space-y-3 sm:space-y-4">
+              {active.quests.map((q) => (
+                <div key={q.id}>
+                  <QuestCard lang={lang} quest={q} onComplete={handleComplete} busy={busyId === q.id} />
+                  <ProofUpload
+                    quest={q}
+                    lang={lang}
+                    busy={verifyingId === q.id}
+                    onVerify={handleVerify}
+                  />
+                </div>
+              ))}
             </div>
-          )}
 
-          <ProgressCounter lang={lang} done={done} total={total} />
+            {error && <p className="text-center text-sm text-rose-300">{error}</p>}
 
-          <div className="space-y-3">
-            {active.quests.map((q) => (
-              <QuestCard key={q.id} lang={lang} quest={q} onComplete={handleComplete} busy={busyId === q.id} />
-            ))}
-          </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <button
+                onClick={() => setShowForm(true)}
+                className="glass-card rounded-2xl py-3 text-sm font-bold text-white/90 transition active:scale-[0.98]"
+              >
+                {t.newQuests}
+              </button>
+              <button
+                onClick={openShare}
+                disabled={done === 0}
+                className="cta-shimmer rounded-2xl py-3 text-sm font-black text-white transition active:scale-[0.98] disabled:opacity-50"
+              >
+                {t.shareStreak}
+              </button>
+            </div>
 
-          {error && <p className="text-center text-sm text-rose-600">{error}</p>}
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowForm(true)}
-              className="flex-1 rounded-xl border border-gray-300 bg-white/70 py-3 font-semibold text-gray-700 active:scale-[0.98]"
-            >
-              {t.newQuests}
-            </button>
-            <button
-              onClick={openShare}
-              disabled={done === 0}
-              className="flex-1 rounded-xl bg-skydark py-3 font-bold text-white active:scale-[0.98] disabled:opacity-50"
-            >
-              {t.shareStreak}
-            </button>
-          </div>
-
-          {shareQuests && <ShareCard lang={lang} location={location} quests={shareQuests} />}
-        </section>
-      )}
+            {shareQuests && <ShareCard lang={lang} location={location} quests={shareQuests} />}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

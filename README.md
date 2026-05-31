@@ -1,4 +1,4 @@
-# Summer Quests ☀️
+# Summer NOW ☀️
 
 **Summer isn't infinite.** A live countdown shows exactly how many summer weekends you have left — then an AI named Sunny hands you **three quests** to spend them on. Tap to complete, watch your streak climb, and post a **screenshot-ready summary card**.
 

@@ -23,6 +23,8 @@ create table if not exists quests (
   completed_at timestamptz,
   proof_photo_url text,
   verification_status text check (verification_status in ('pending', 'approved', 'rejected')),
+  verification_note text,
+  reward_points int not null default 0,
   verified_at timestamptz
 );
 
