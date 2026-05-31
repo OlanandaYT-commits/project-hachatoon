@@ -185,6 +185,7 @@ export default function Home() {
                   <QuestMapPoints
                     quest={q}
                     lang={lang}
+                    location={location}
                     saving={savingPinsId === q.id}
                     onSave={handlePinsSave}
                   />

@@ -1,15 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import L from "leaflet";
+import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import type { QuestPin } from "@/lib/db";
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
 
 function ClickCapture({ onAdd }: { onAdd: (lat: number, lng: number) => void }) {
   useMapEvents({
@@ -23,10 +16,12 @@ function ClickCapture({ onAdd }: { onAdd: (lat: number, lng: number) => void }) 
 export default function QuestMapInner({
   pins,
   center,
+  userPosition,
   onAdd,
 }: {
   pins: QuestPin[];
   center: [number, number];
+  userPosition: [number, number] | null;
   onAdd: (lat: number, lng: number) => void;
 }) {
   const key = useMemo(() => `${center[0]}:${center[1]}`, [center]);
@@ -39,8 +34,24 @@ export default function QuestMapInner({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <ClickCapture onAdd={onAdd} />
+        {userPosition && (
+          <CircleMarker
+            center={userPosition}
+            radius={8}
+            pathOptions={{ color: "#38bdf8", fillColor: "#0ea5e9", fillOpacity: 0.9, weight: 2 }}
+          />
+        )}
         {pins.map((pin) => (
-          <Marker key={pin.id} position={[pin.lat, pin.lng]} />
+          <CircleMarker
+            key={pin.id}
+            center={[pin.lat, pin.lng]}
+            radius={pin.label ? 9 : 7}
+            pathOptions={
+              pin.label
+                ? { color: "#fbbf24", fillColor: "#f59e0b", fillOpacity: 0.95, weight: 2 }
+                : { color: "#ff5e62", fillColor: "#ff3cac", fillOpacity: 0.9, weight: 2 }
+            }
+          />
         ))}
       </MapContainer>
     </div>
