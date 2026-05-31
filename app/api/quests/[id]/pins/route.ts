@@ -7,11 +7,15 @@ function normalizePins(raw: unknown): QuestPin[] {
   return raw
     .map((p) => p as Partial<QuestPin>)
     .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
-    .map((p) => ({
-      id: String(p.id ?? crypto.randomUUID()),
-      lat: Number(p.lat),
-      lng: Number(p.lng),
-    }))
+    .map((p) => {
+      const label = typeof p.label === "string" ? p.label.trim() : "";
+      return {
+        id: String(p.id ?? crypto.randomUUID()),
+        lat: Number(p.lat),
+        lng: Number(p.lng),
+        ...(label ? { label } : {}),
+      };
+    })
     .slice(0, 12);
 }
 
