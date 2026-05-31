@@ -25,6 +25,7 @@ create table if not exists quests (
   verification_status text check (verification_status in ('pending', 'approved', 'rejected')),
   verification_note text,
   reward_points int not null default 0,
+  map_points jsonb not null default '[]'::jsonb,
   verified_at timestamptz
 );
 

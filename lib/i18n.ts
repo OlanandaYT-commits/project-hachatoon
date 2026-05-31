@@ -41,6 +41,12 @@ type Dict = {
   verifiedApproved: (points: number) => string;
   verifiedRejected: string;
   verificationFailed: string;
+  mapTitle: string;
+  useMyLocation: string;
+  pointsHint: string;
+  pointsSaved: string;
+  pointsSaveFailed: string;
+  pointsSaving: string;
   cadence: Record<"daily" | "weekly" | "monthly", string>;
   difficulty: Record<"easy" | "medium" | "hard", string>;
 };
@@ -82,6 +88,12 @@ export const T: Record<Lang, Dict> = {
     verifiedApproved: (points) => `Verified • +${points} points`,
     verifiedRejected: "Rejected by AI. Try a clearer proof photo.",
     verificationFailed: "Verification failed. Try again.",
+    mapTitle: "Quest map points",
+    useMyLocation: "Add my location",
+    pointsHint: "Tap on map to add multiple nearby points.",
+    pointsSaved: "Points saved",
+    pointsSaveFailed: "Could not save points",
+    pointsSaving: "Saving points...",
     cadence: { daily: "Daily", weekly: "Weekly", monthly: "Monthly" },
     difficulty: { easy: "easy", medium: "medium", hard: "hard" },
   },
@@ -121,6 +133,12 @@ export const T: Record<Lang, Dict> = {
     verifiedApproved: (points) => `Подтверждено • +${points} баллов`,
     verifiedRejected: "ИИ отклонил. Попробуй более понятное фото.",
     verificationFailed: "Не удалось проверить. Попробуй ещё раз.",
+    mapTitle: "Точки квеста на карте",
+    useMyLocation: "Добавить мою геолокацию",
+    pointsHint: "Нажми на карту, чтобы добавить несколько близких точек.",
+    pointsSaved: "Точки сохранены",
+    pointsSaveFailed: "Не удалось сохранить точки",
+    pointsSaving: "Сохраняем точки...",
     cadence: { daily: "Каждый день", weekly: "Каждую неделю", monthly: "Раз в месяц" },
     difficulty: { easy: "легко", medium: "средне", hard: "сложно" },
   },

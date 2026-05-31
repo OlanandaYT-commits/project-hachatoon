@@ -4,6 +4,7 @@ import { hasDb, supabase } from "./supabase";
 export type Cadence = "daily" | "weekly" | "monthly";
 export type Difficulty = "easy" | "medium" | "hard";
 export type VerificationStatus = "pending" | "approved" | "rejected" | null;
+export type QuestPin = { id: string; lat: number; lng: number };
 
 export type GeneratedQuest = {
   title: string;
@@ -19,6 +20,7 @@ export type Quest = GeneratedQuest & {
   verification_status: VerificationStatus;
   reward_points: number;
   verification_note: string | null;
+  map_points: QuestPin[];
 };
 
 export type ActiveQuestSet = {
@@ -34,7 +36,7 @@ const mem = {
 };
 
 function questSelect() {
-  return "id, title, description, cadence, difficulty, completed_at, proof_photo_url, verification_status, reward_points, verification_note";
+  return "id, title, description, cadence, difficulty, completed_at, proof_photo_url, verification_status, reward_points, verification_note, map_points";
 }
 
 function normalizeQuest(q: Partial<Quest> & { id: string; title: string; description: string; cadence: Cadence; difficulty: Difficulty }): Quest {
@@ -49,6 +51,7 @@ function normalizeQuest(q: Partial<Quest> & { id: string; title: string; descrip
     verification_status: (q.verification_status ?? null) as VerificationStatus,
     reward_points: q.reward_points ?? 0,
     verification_note: q.verification_note ?? null,
+    map_points: Array.isArray(q.map_points) ? (q.map_points as QuestPin[]) : [],
   };
 }
 
@@ -139,6 +142,7 @@ export async function createQuestSetWithQuests(sessionId: string, source: "ai" |
         verification_status: null,
         reward_points: 0,
         verification_note: null,
+        map_points: [],
         quest_set_id: setId,
       };
       mem.quests.set(id, row);
@@ -157,6 +161,7 @@ export async function createQuestSetWithQuests(sessionId: string, source: "ai" |
     verification_status: null,
     reward_points: 0,
     verification_note: null,
+    map_points: [],
   }));
 
   const { data: inserted, error: qErr } = await supabase.from("quests").insert(rows).select(questSelect());
@@ -221,6 +226,26 @@ export async function setQuestVerification(
   const { data, error } = await supabase
     .from("quests")
     .update(payload)
+    .eq("id", questId)
+    .select(questSelect())
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return normalizeQuest(data as any);
+}
+
+export async function setQuestPins(questId: string, pins: QuestPin[]): Promise<Quest | null> {
+  const limited = pins.slice(0, 12);
+  if (!hasDb || !supabase) {
+    const q = mem.quests.get(questId);
+    if (!q) return null;
+    q.map_points = limited;
+    return normalizeQuest(q);
+  }
+
+  const { data, error } = await supabase
+    .from("quests")
+    .update({ map_points: limited })
     .eq("id", questId)
     .select(questSelect())
     .maybeSingle();

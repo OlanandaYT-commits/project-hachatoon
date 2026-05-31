@@ -11,10 +11,13 @@
   "dependencies": {
     "@cursor/sdk": "^1.0.17",
     "@supabase/supabase-js": "^2.45.4",
+    "@types/leaflet": "^1.9.21",
     "html-to-image": "^1.11.11",
+    "leaflet": "^1.9.4",
     "next": "^15.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

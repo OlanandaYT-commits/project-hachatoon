@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ActiveQuestSet, Quest } from "@/lib/db";
+import type { ActiveQuestSet, Quest, QuestPin } from "@/lib/db";
 import type { Lang } from "@/lib/i18n";
 import { T } from "@/lib/i18n";
 import QuestForm from "@/components/QuestForm";
@@ -11,6 +11,7 @@ import ShareCard from "@/components/ShareCard";
 import SummerCountdown from "@/components/SummerCountdown";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ProofUpload from "@/components/ProofUpload";
+import QuestMapPoints from "@/components/QuestMapPoints";
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("en");
@@ -18,6 +19,7 @@ export default function Home() {
   const [generating, setGenerating] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [savingPinsId, setSavingPinsId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [location, setLocation] = useState("");
   const [interests, setInterests] = useState("");
@@ -111,6 +113,25 @@ export default function Home() {
     }
   }
 
+  async function handlePinsSave(questId: string, pins: QuestPin[]) {
+    setSavingPinsId(questId);
+    try {
+      const res = await fetch(`/api/quests/${questId}/pins`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pins }),
+      });
+      if (!res.ok) throw new Error("pins failed");
+      const data = await res.json();
+      if (data.active) setActive(data.active as ActiveQuestSet);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setSavingPinsId(null);
+    }
+  }
+
   const done = active ? active.quests.filter((q) => q.completed_at).length : 0;
   const total = active ? active.quests.length : 0;
   const points = active ? active.quests.reduce((sum, q) => sum + (q.reward_points ?? 0), 0) : 0;
@@ -161,6 +182,12 @@ export default function Home() {
               {active.quests.map((q) => (
                 <div key={q.id}>
                   <QuestCard lang={lang} quest={q} onComplete={handleComplete} busy={busyId === q.id} />
+                  <QuestMapPoints
+                    quest={q}
+                    lang={lang}
+                    saving={savingPinsId === q.id}
+                    onSave={handlePinsSave}
+                  />
                   <ProofUpload
                     quest={q}
                     lang={lang}

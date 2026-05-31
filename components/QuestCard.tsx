@@ -48,7 +48,7 @@ export default function QuestCard({
             done ? "border-green-400 bg-green-500 text-white" : "border-white/35 text-transparent"
           }`}
         >
-          ?
+          ✓
         </span>
       </div>
 
