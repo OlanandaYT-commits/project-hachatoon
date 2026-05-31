@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  min-height: 100dvh;
+  color: #ffffff;
+  background:
+    radial-gradient(1300px 800px at 50% -15%, #14181f 0%, #06080b 64%),
+    #06080b;
+  -webkit-font-smoothing: antialiased;
+}
+
+.blob {
+  position: fixed;
+  border-radius: 999px;
+  filter: blur(60px);
+  pointer-events: none;
+  opacity: 0.45;
+  z-index: 0;
+}
+
+.blob-a {
+  width: 320px;
+  height: 320px;
+  left: -90px;
+  top: -70px;
+  background: radial-gradient(circle, #ff7a18, transparent 70%);
+  animation: float-a 15s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.blob-b {
+  width: 300px;
+  height: 300px;
+  right: -120px;
+  top: 120px;
+  background: radial-gradient(circle, #ff3cac, transparent 70%);
+  animation: float-b 19s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.blob-c {
+  width: 250px;
+  height: 250px;
+  left: -60px;
+  bottom: 12%;
+  background: radial-gradient(circle, #ff5e62, transparent 70%);
+  opacity: 0.3;
+  animation: float-a 22s cubic-bezier(0.22, 1, 0.36, 1) infinite reverse;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+.grad-text {
+  background: linear-gradient(120deg, #ff7a18 0%, #ff5e62 48%, #ff3cac 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.cta-shimmer {
+  background: linear-gradient(120deg, #ff7a18, #ff5e62, #ff3cac, #ff5e62, #ff7a18);
+  background-size: 200% 100%;
+  animation: shimmer-x 5.6s linear infinite;
+}
+
+.hero-glow {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+.tick {
+  animation: tick-flash 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes float-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(42px, 50px) scale(1.12);
+  }
+}
+
+@keyframes float-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-52px, 44px) scale(1.16);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 22px rgba(255, 94, 98, 0.32)) drop-shadow(0 0 56px rgba(255, 60, 172, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 38px rgba(255, 94, 98, 0.56)) drop-shadow(0 0 80px rgba(255, 60, 172, 0.38));
+  }
+}
+
+@keyframes shimmer-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes tick-flash {
+  0% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
