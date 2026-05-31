@@ -28,16 +28,30 @@ export default function QuestMapPoints({
   const [pins, setPins] = useState<QuestPin[]>(quest.map_points ?? []);
   const [status, setStatus] = useState("");
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER);
+  const [userPosition, setUserPosition] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     setPins(quest.map_points ?? []);
-  }, [quest.map_points]);
+  }, [quest.id]);
 
   useEffect(() => {
     if (pins.length) {
       setCenter([pins[pins.length - 1].lat, pins[pins.length - 1].lng]);
     }
   }, [pins]);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const p: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+        setUserPosition(p);
+        if (!pins.length) setCenter(p);
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }, [pins.length]);
 
   const pointsText = useMemo(() => `${pins.length}/12`, [pins.length]);
 
@@ -80,7 +94,7 @@ export default function QuestMapPoints({
         <span className="text-[11px] font-semibold text-white/55">{pointsText}</span>
       </div>
 
-      <QuestMapInner pins={pins} center={center} onAdd={addPoint} />
+      <QuestMapInner pins={pins} center={center} userPosition={userPosition} onAdd={addPoint} />
 
       <div className="mt-2 flex flex-wrap gap-2">
         <button
@@ -91,6 +105,15 @@ export default function QuestMapPoints({
         >
           {saving ? t.pointsSaving : t.useMyLocation}
         </button>
+        {userPosition && (
+          <button
+            type="button"
+            onClick={() => setCenter(userPosition)}
+            className="rounded-lg border border-sky-300/40 px-3 py-1.5 text-xs font-semibold text-sky-200"
+          >
+            {t.centerOnMe}
+          </button>
+        )}
       </div>
 
       <p className="mt-2 text-[11px] text-white/55">{t.pointsHint}</p>

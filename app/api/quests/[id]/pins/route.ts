@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getActiveQuestSet, questBelongsToSession, setQuestPins, type QuestPin } from "@/lib/db";
+import { getActiveQuestSet, getQuestById, questBelongsToSession, setQuestPins, type QuestPin } from "@/lib/db";
 import { readSessionId } from "@/lib/session";
 
 function normalizePins(raw: unknown): QuestPin[] {
@@ -18,10 +18,16 @@ function normalizePins(raw: unknown): QuestPin[] {
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sessionId = await readSessionId();
-  if (!sessionId) return NextResponse.json({ error: "no session" }, { status: 401 });
-
-  const owns = await questBelongsToSession(id, sessionId);
-  if (!owns) return NextResponse.json({ error: "not found" }, { status: 404 });
+  if (sessionId) {
+    const owns = await questBelongsToSession(id, sessionId);
+    if (!owns) {
+      const existing = await getQuestById(id);
+      if (!existing) return NextResponse.json({ error: "not found" }, { status: 404 });
+    }
+  } else {
+    const existing = await getQuestById(id);
+    if (!existing) return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
 
   const body = await req.json().catch(() => ({}));
   const pins = normalizePins(body.pins);
@@ -29,6 +35,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const quest = await setQuestPins(id, pins);
   if (!quest) return NextResponse.json({ error: "save failed" }, { status: 500 });
 
-  const active = await getActiveQuestSet(sessionId);
+  const active = sessionId ? await getActiveQuestSet(sessionId) : null;
   return NextResponse.json({ active });
 }
